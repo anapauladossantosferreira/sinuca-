@@ -7,11 +7,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background: linear-gradient(#0a0a0a, #1a1a2e);
@@ -32,12 +28,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.5s;
         }
         
-        #game-screen, #leaderboard-screen {
-            display: none;
-        }
+        #game-screen, #leaderboard-screen { display: none; }
         
         .container {
             background: rgba(0, 0, 0, 0.85);
@@ -80,33 +73,24 @@
             width: 800px;
             height: 500px;
             background: #0a6b3a;
-            border: 30px solid #4a2c0f;
+            border: 35px solid #4a2c0f;
             border-image: linear-gradient(#8b5a2b, #5c3311) 1;
             position: relative;
             margin: 20px auto;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9),
-                        inset 0 0 60px rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9),
+                        inset 0 0 80px rgba(0,0,0,0.7);
+            border-radius: 20px;
             overflow: hidden;
         }
         
         .pocket {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             background: #111;
             border-radius: 50%;
-            box-shadow: inset 0 0 15px #000;
-        }
-        
-        #cue {
-            position: absolute;
-            height: 8px;
-            background: linear-gradient(90deg, #ddd, #fff, #ddd);
-            border-radius: 4px;
-            transform-origin: left center;
-            box-shadow: 0 2px 8px rgba(255,255,255,0.6);
-            z-index: 10;
+            box-shadow: inset 0 0 20px #000;
+            z-index: 5;
         }
         
         .ball {
@@ -122,13 +106,14 @@
             color: white;
             text-shadow: 0 0 4px black;
             border: 2px solid #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.6),
-                        inset 0 -6px 8px rgba(255,255,255,0.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.7),
+                        inset 0 -8px 10px rgba(255,255,255,0.5);
             user-select: none;
-            transition: transform 0.05s linear;
+            transition: transform 0.03s linear;
+            z-index: 10;
         }
         
-        .white { background: #fff; color: #000; }
+        .white { background: #fff; color: #000; border-color: #ddd; }
         .ball1 { background: #f00; }
         .ball2 { background: #00f; }
         .ball3 { background: #f60; }
@@ -136,7 +121,30 @@
         .ball5 { background: #ff0; color: #000; }
         .ball6 { background: #0a0; }
         .ball7 { background: #f0f; }
-        .ball8 { background: #000; color: #fff; border: 3px solid #ffd700; }
+        .ball8 { background: #000; color: #ffd700; border: 3px solid #ffd700; }
+        
+        #cue {
+            position: absolute;
+            width: 280px;
+            height: 8px;
+            background: linear-gradient(90deg, #8B4513, #DEB887, #8B4513);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6),
+                        inset 0 2px 4px rgba(255,255,255,0.4);
+            transform-origin: right center;
+            z-index: 8;
+            pointer-events: none;
+        }
+        
+        #aim-line {
+            position: absolute;
+            height: 3px;
+            background: rgba(255, 255, 0, 0.6);
+            box-shadow: 0 0 8px #ff0;
+            z-index: 7;
+            pointer-events: none;
+            transform-origin: left center;
+        }
         
         #ui {
             position: absolute;
@@ -156,20 +164,21 @@
         }
         
         #timer {
-            font-size: 28px;
+            font-size: 32px;
             color: #ff0;
-            text-shadow: 0 0 10px #ff0;
+            text-shadow: 0 0 12px #ff0;
         }
         
         #power-bar {
             position: absolute;
-            bottom: 30px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            width: 300px;
-            height: 25px;
+            width: 320px;
+            height: 28px;
             background: #222;
-            border: 3px solid #ffd700;
+            border: 4px solid #ffd700;
+            border-radius: 6px;
             overflow: hidden;
         }
         
@@ -177,65 +186,54 @@
             height: 100%;
             background: linear-gradient(90deg, #0f0, #ff0, #f00);
             width: 0%;
-            transition: width 0.05s linear;
-        }
-        
-        .medal {
-            font-size: 40px;
-            margin: 0 10px;
+            transition: width 0.04s linear;
         }
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
+    <!-- LOGIN -->
     <div id="login-screen">
         <div class="container">
             <h1 style="color:#ffd700; margin-bottom:20px;">🎱 SINUCA DUEL</h1>
             <h2>LOGIN</h2>
-            <input type="text" id="player1-name" placeholder="JOGADOR 1 (Nome)" value="Jogador1">
-            <input type="password" id="player1-pass" placeholder="Senha (qualquer)" value="123">
-            <input type="text" id="player2-name" placeholder="JOGADOR 2 (Nome)" value="Jogador2">
-            <input type="password" id="player2-pass" placeholder="Senha (qualquer)" value="123">
-            <br>
+            <input type="text" id="player1-name" placeholder="JOGADOR 1" value="Jogador1">
+            <input type="password" id="player1-pass" placeholder="Senha" value="123">
+            <input type="text" id="player2-name" placeholder="JOGADOR 2" value="Jogador2">
+            <input type="password" id="player2-pass" placeholder="Senha" value="123">
+            <br><br>
             <button onclick="startGame()">ENTRAR NA MESA</button>
         </div>
     </div>
 
-    <!-- TELA DO JOGO -->
+    <!-- JOGO -->
     <div id="game-screen">
         <div id="ui">
-            <div class="player-info">
-                <span id="p1-name">Jogador1</span> 
-                <span id="p1-score">0</span>
-            </div>
+            <div class="player-info"><span id="p1-name">Jogador1</span> <span id="p1-score">0</span></div>
             <div id="timer">30</div>
-            <div class="player-info">
-                <span id="p2-name">Jogador2</span> 
-                <span id="p2-score">0</span>
-            </div>
+            <div class="player-info"><span id="p2-name">Jogador2</span> <span id="p2-score">0</span></div>
         </div>
 
         <div id="table">
-            <!-- Bolsas (pockets) -->
-            <div class="pocket" style="top: -10px; left: -10px;"></div>
-            <div class="pocket" style="top: -10px; right: -10px;"></div>
-            <div class="pocket" style="bottom: -10px; left: -10px;"></div>
-            <div class="pocket" style="bottom: -10px; right: -10px;"></div>
-            <div class="pocket" style="top: 50%; left: -10px; transform: translateY(-50%);"></div>
-            <div class="pocket" style="top: 50%; right: -10px; transform: translateY(-50%);"></div>
+            <!-- Caçapas -->
+            <div class="pocket" style="top: -15px; left: -15px;"></div>
+            <div class="pocket" style="top: -15px; right: -15px;"></div>
+            <div class="pocket" style="bottom: -15px; left: -15px;"></div>
+            <div class="pocket" style="bottom: -15px; right: -15px;"></div>
+            <div class="pocket" style="top: 50%; left: -15px; transform: translateY(-50%);"></div>
+            <div class="pocket" style="top: 50%; right: -15px; transform: translateY(-50%);"></div>
         </div>
 
         <div id="power-bar">
             <div id="power-fill"></div>
         </div>
 
-        <div style="text-align:center; margin-top:15px;">
+        <div style="text-align:center; margin-top:20px;">
             <button onclick="endTurn()">PASSAR VEZ</button>
             <button onclick="showLeaderboard()">VER RANKING</button>
         </div>
     </div>
 
-    <!-- TELA DE RANKING -->
+    <!-- RANKING -->
     <div id="leaderboard-screen">
         <div class="container">
             <h1>🏆 RANKING</h1>
@@ -245,8 +243,6 @@
     </div>
 
     <script>
-        // Variáveis do jogo
-        let canvas, ctx;
         let balls = [];
         let cueBall;
         let currentPlayer = 1;
@@ -254,13 +250,17 @@
         let player2 = { name: "Jogador2", score: 0 };
         let timeLeft = 30;
         let timerInterval;
+        let gameRunning = false;
+        let leaderboard = JSON.parse(localStorage.getItem('sinucaLeaderboard')) || [];
+        
         let isAiming = false;
         let cueAngle = 0;
         let power = 0;
-        let isCharging = false;
-        let gameRunning = false;
+        let powerInterval;
         
-        let leaderboard = JSON.parse(localStorage.getItem('sinucaLeaderboard')) || [];
+        const TABLE_WIDTH = 800;
+        const TABLE_HEIGHT = 500;
+        const BORDER = 35;
         
         class Ball {
             constructor(x, y, color, number) {
@@ -276,25 +276,19 @@
         }
         
         function createBalls() {
-            balls = [];
             const table = document.getElementById('table');
+            balls = [];
             
-            // Bola branca
-            cueBall = new Ball(200, 250, '#fff', 0);
+            // Bola Branca
+            cueBall = new Ball(220, 250, '#fff', 0);
             createBallElement(cueBall, table);
             
-            // Bolas 1 a 8
+            // Bolas numeradas
             const positions = [
-                {x: 550, y: 250}, // 1
-                {x: 580, y: 220}, // 2
-                {x: 580, y: 280}, // 3
-                {x: 610, y: 190}, // 4
-                {x: 610, y: 250}, // 5
-                {x: 610, y: 310}, // 6
-                {x: 640, y: 160}, // 7
-                {x: 640, y: 250}  // 8
+                {x: 550, y: 250}, {x: 580, y: 215}, {x: 580, y: 285},
+                {x: 610, y: 190}, {x: 610, y: 250}, {x: 610, y: 310},
+                {x: 640, y: 170}, {x: 640, y: 250}
             ];
-            
             const colors = ['#f00','#00f','#f60','#800080','#ff0','#0a0','#f0f','#000'];
             
             positions.forEach((pos, i) => {
@@ -312,22 +306,64 @@
             ball.element = el;
         }
         
-        function updateBallPositions() {
+        function updateVisuals() {
+            // Atualiza bola branca
             if (cueBall.element) {
-                cueBall.element.style.left = (cueBall.x - 16) + 'px';
-                cueBall.element.style.top = (cueBall.y - 16) + 'px';
+                cueBall.element.style.left = `${cueBall.x - 16}px`;
+                cueBall.element.style.top = `${cueBall.y - 16}px`;
             }
             
+            // Atualiza outras bolas
             balls.forEach(ball => {
                 if (ball.element) {
-                    ball.element.style.left = (ball.x - 16) + 'px';
-                    ball.element.style.top = (ball.y - 16) + 'px';
+                    ball.element.style.left = `${ball.x - 16}px`;
+                    ball.element.style.top = `${ball.y - 16}px`;
                 }
             });
+            
+            // Atualiza taco e mira
+            updateCueAndAim();
+        }
+        
+        function updateCueAndAim() {
+            const cue = document.getElementById('cue');
+            const aimLine = document.getElementById('aim-line');
+            if (!cue || !aimLine) return;
+            
+            const table = document.getElementById('table');
+            
+            // Posição do taco (atrás da bola branca)
+            const cueLength = 280;
+            const cueX = cueBall.x - Math.cos(cueAngle) * 28; // offset da bola
+            const cueY = cueBall.y - Math.sin(cueAngle) * 28;
+            
+            cue.style.left = `${cueX - cueLength}px`;
+            cue.style.top = `${cueY - 4}px`;
+            cue.style.transform = `rotate(${cueAngle * 180 / Math.PI}deg)`;
+            
+            // Linha de mira
+            aimLine.style.left = `${cueBall.x}px`;
+            aimLine.style.top = `${cueBall.y - 1.5}px`;
+            aimLine.style.width = '600px';
+            aimLine.style.transform = `rotate(${cueAngle * 180 / Math.PI}deg)`;
+        }
+        
+        function createCueAndAim() {
+            const table = document.getElementById('table');
+            
+            // Taco
+            const cue = document.createElement('div');
+            cue.id = 'cue';
+            table.appendChild(cue);
+            
+            // Linha de mira
+            const aim = document.createElement('div');
+            aim.id = 'aim-line';
+            table.appendChild(aim);
         }
         
         function applyPhysics() {
-            const friction = 0.985;
+            const friction = 0.982;
             
             // Bola branca
             cueBall.x += cueBall.vx;
@@ -335,8 +371,15 @@
             cueBall.vx *= friction;
             cueBall.vy *= friction;
             
-            if (Math.abs(cueBall.vx) < 0.1) cueBall.vx = 0;
-            if (Math.abs(cueBall.vy) < 0.1) cueBall.vy = 0;
+            if (Math.abs(cueBall.vx) < 0.08) cueBall.vx = 0;
+            if (Math.abs(cueBall.vy) < 0.08) cueBall.vy = 0;
+            
+            // Colisão com paredes (cushions)
+            const r = cueBall.radius;
+            if (cueBall.x - r < BORDER) { cueBall.x = BORDER + r; cueBall.vx = -cueBall.vx * 0.85; }
+            if (cueBall.x + r > TABLE_WIDTH - BORDER) { cueBall.x = TABLE_WIDTH - BORDER - r; cueBall.vx = -cueBall.vx * 0.85; }
+            if (cueBall.y - r < BORDER) { cueBall.y = BORDER + r; cueBall.vy = -cueBall.vy * 0.85; }
+            if (cueBall.y + r > TABLE_HEIGHT - BORDER) { cueBall.y = TABLE_HEIGHT - BORDER - r; cueBall.vy = -cueBall.vy * 0.85; }
             
             // Outras bolas
             balls.forEach(ball => {
@@ -345,40 +388,42 @@
                 ball.vx *= friction;
                 ball.vy *= friction;
                 
-                if (Math.abs(ball.vx) < 0.1) ball.vx = 0;
-                if (Math.abs(ball.vy) < 0.1) ball.vy = 0;
+                if (Math.abs(ball.vx) < 0.08) ball.vx = 0;
+                if (Math.abs(ball.vy) < 0.08) ball.vy = 0;
+                
+                // Colisão com paredes
+                if (ball.x - r < BORDER) { ball.x = BORDER + r; ball.vx = -ball.vx * 0.85; }
+                if (ball.x + r > TABLE_WIDTH - BORDER) { ball.x = TABLE_WIDTH - BORDER - r; ball.vx = -ball.vx * 0.85; }
+                if (ball.y - r < BORDER) { ball.y = BORDER + r; ball.vy = -ball.vy * 0.85; }
+                if (ball.y + r > TABLE_HEIGHT - BORDER) { ball.y = TABLE_HEIGHT - BORDER - r; ball.vy = -ball.vy * 0.85; }
             });
             
-            handleCollisions();
+            handleBallCollisions();
             checkPockets();
-            updateBallPositions();
+            updateVisuals();
         }
         
-        function handleCollisions() {
+        function handleBallCollisions() {
             const allBalls = [cueBall, ...balls];
-            
             for (let i = 0; i < allBalls.length; i++) {
                 for (let j = i + 1; j < allBalls.length; j++) {
                     const b1 = allBalls[i];
                     const b2 = allBalls[j];
-                    
                     const dx = b2.x - b1.x;
                     const dy = b2.y - b1.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const dist = Math.hypot(dx, dy);
                     
-                    if (dist < b1.radius + b2.radius && dist > 0) {
+                    if (dist < b1.radius + b2.radius && dist > 0.001) {
                         const nx = dx / dist;
                         const ny = dy / dist;
-                        
                         const p = 2 * (b1.vx * nx + b1.vy * ny - b2.vx * nx - b2.vy * ny) / 2;
                         
-                        b1.vx = b1.vx - p * nx;
-                        b1.vy = b1.vy - p * ny;
-                        b2.vx = b2.vx + p * nx;
-                        b2.vy = b2.vy + p * ny;
+                        b1.vx -= p * nx;
+                        b1.vy -= p * ny;
+                        b2.vx += p * nx;
+                        b2.vy += p * ny;
                         
-                        // Separação
-                        const overlap = (b1.radius + b2.radius) - dist;
+                        const overlap = (b1.radius + b2.radius) - dist + 0.5;
                         b1.x -= overlap * nx * 0.5;
                         b1.y -= overlap * ny * 0.5;
                         b2.x += overlap * nx * 0.5;
@@ -390,43 +435,33 @@
         
         function checkPockets() {
             const pockets = [
-                {x: 20, y: 20},
-                {x: 780, y: 20},
-                {x: 20, y: 480},
-                {x: 780, y: 480},
-                {x: 20, y: 250},
-                {x: 780, y: 250}
+                {x: 35, y: 35}, {x: 765, y: 35},
+                {x: 35, y: 465}, {x: 765, y: 465},
+                {x: 35, y: 250}, {x: 765, y: 250}
             ];
             
-            // Verificar bola branca
-            if (cueBall.vx !== 0 || cueBall.vy !== 0) {
-                for (let p of pockets) {
-                    if (Math.hypot(cueBall.x - p.x, cueBall.y - p.y) < 35) {
-                        cueBall.x = 200;
-                        cueBall.y = 250;
-                        cueBall.vx = 0;
-                        cueBall.vy = 0;
-                        return;
-                    }
+            // Bola branca - só volta ao centro se encacapada
+            for (let p of pockets) {
+                if (Math.hypot(cueBall.x - p.x, cueBall.y - p.y) < 38) {
+                    cueBall.x = 220;
+                    cueBall.y = 250;
+                    cueBall.vx = 0;
+                    cueBall.vy = 0;
+                    return;
                 }
             }
             
-            // Verificar bolas coloridas
+            // Bolas coloridas
             for (let i = balls.length - 1; i >= 0; i--) {
                 const ball = balls[i];
-                if (ball.vx === 0 && ball.vy === 0) continue;
-                
                 for (let p of pockets) {
-                    if (Math.hypot(ball.x - p.x, ball.y - p.y) < 35) {
-                        // Pontuação
-                        const points = ball.number * 10;
-                        if (currentPlayer === 1) {
-                            player1.score += points;
-                            document.getElementById('p1-score').textContent = player1.score;
-                        } else {
-                            player2.score += points;
-                            document.getElementById('p2-score').textContent = player2.score;
-                        }
+                    if (Math.hypot(ball.x - p.x, ball.y - p.y) < 38) {
+                        const points = ball.number * 12;
+                        if (currentPlayer === 1) player1.score += points;
+                        else player2.score += points;
+                        
+                        document.getElementById('p1-score').textContent = player1.score;
+                        document.getElementById('p2-score').textContent = player2.score;
                         
                         ball.element.remove();
                         balls.splice(i, 1);
@@ -450,10 +485,7 @@
             timerInterval = setInterval(() => {
                 timeLeft--;
                 document.getElementById('timer').textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    endTurn();
-                }
+                if (timeLeft <= 0) endTurn();
             }, 1000);
         }
         
@@ -468,51 +500,41 @@
             
             table.addEventListener('mousedown', (e) => {
                 if (cueBall.vx !== 0 || cueBall.vy !== 0) return;
-                
                 isAiming = true;
-                const rect = table.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                cueAngle = Math.atan2(
-                    mouseY - cueBall.y,
-                    mouseX - cueBall.x
-                );
+                updateAim(e);
             });
             
             document.addEventListener('mousemove', (e) => {
-                if (!isAiming) return;
-                
-                const rect = table.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                cueAngle = Math.atan2(
-                    mouseY - cueBall.y,
-                    mouseX - cueBall.x
-                );
+                if (isAiming) updateAim(e);
             });
             
             document.addEventListener('mouseup', (e) => {
                 if (!isAiming) return;
                 isAiming = false;
                 
-                const power = Math.min(25, Math.hypot(
-                    (e.clientX - table.getBoundingClientRect().left) - cueBall.x,
-                    (e.clientY - table.getBoundingClientRect().top) - cueBall.y
-                ) / 8);
+                const rect = table.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
                 
-                cueBall.vx = Math.cos(cueAngle) * power;
-                cueBall.vy = Math.sin(cueAngle) * power;
+                const dx = mouseX - cueBall.x;
+                const dy = mouseY - cueBall.y;
+                const distance = Math.min(220, Math.hypot(dx, dy));
+                const force = distance / 7.5;
+                
+                cueBall.vx = -Math.cos(cueAngle) * force;
+                cueBall.vy = -Math.sin(cueAngle) * force;
+                
+                document.getElementById('power-fill').style.width = '0%';
             });
+        }
+        
+        function updateAim(e) {
+            const rect = document.getElementById('table').getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
             
-            // Power bar visual (simulado)
-            setInterval(() => {
-                if (isAiming) {
-                    power = (power + 3) % 100;
-                    document.getElementById('power-fill').style.width = power + '%';
-                }
-            }, 50);
+            cueAngle = Math.atan2(mouseY - cueBall.y, mouseX - cueBall.x);
+            updateCueAndAim();
         }
         
         function startGame() {
@@ -521,14 +543,14 @@
             
             document.getElementById('p1-name').textContent = player1.name;
             document.getElementById('p2-name').textContent = player2.name;
-            document.getElementById('p1-score').textContent = player1.score;
-            document.getElementById('p2-score').textContent = player2.score;
             
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'flex';
             
             createBalls();
+            createCueAndAim();
             setupControls();
+            
             gameRunning = true;
             gameLoop();
             startTimer();
@@ -538,34 +560,17 @@
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('leaderboard-screen').style.display = 'flex';
             
-            // Atualiza leaderboard
-            const p1Total = player1.score;
-            const p2Total = player2.score;
+            leaderboard.push({name: player1.name, score: player1.score, date: new Date().toLocaleDateString('pt-BR')});
+            leaderboard.push({name: player2.name, score: player2.score, date: new Date().toLocaleDateString('pt-BR')});
             
-            leaderboard.push({
-                name: player1.name,
-                score: p1Total,
-                date: new Date().toLocaleDateString('pt-BR')
-            });
-            leaderboard.push({
-                name: player2.name,
-                score: p2Total,
-                date: new Date().toLocaleDateString('pt-BR')
-            });
-            
-            // Ordena
-            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard.sort((a,b) => b.score - a.score);
             leaderboard = leaderboard.slice(0, 10);
             localStorage.setItem('sinucaLeaderboard', JSON.stringify(leaderboard));
             
-            let html = '<ol style="text-align:left; max-width:400px;">';
+            let html = '<ol style="text-align:left; max-width:420px;">';
             leaderboard.forEach((entry, i) => {
-                let medal = '';
-                if (i === 0) medal = '🥇';
-                else if (i === 1) medal = '🥈';
-                else if (i === 2) medal = '🥉';
-                
-                html += `<li style="margin:12px 0;">${medal} ${entry.name} — ${entry.score} pts (${entry.date})</li>`;
+                const medal = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : '';
+                html += `<li style="margin:12px 0;">${medal} ${entry.name} — ${entry.score} pts</li>`;
             });
             html += '</ol>';
             document.getElementById('ranking-list').innerHTML = html;
@@ -576,10 +581,7 @@
             document.getElementById('game-screen').style.display = 'flex';
         }
         
-        // Iniciar
-        window.onload = () => {
-            console.log("%c🎱 Sinuca Duel carregado! Arraste o mouse para mirar e solte para tacar.", "color:#ffd700; font-size:14px");
-        };
+        window.onload = () => console.log("%c🎱 Sinuca Melhorada carregada! Arraste para mirar.", "color:#ffd700;font-size:16px");
     </script>
 </body>
 </html>
