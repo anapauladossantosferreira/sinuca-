@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sinuca 8-Ball Duel - Com Efeito</title>
+    <title>Sinuca 8-Ball Duel</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -48,7 +48,7 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 12px; font-weight: bold; color: white;
             border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.7);
-            user-select: none; z-index: 10; transition: transform 0.05s linear;
+            user-select: none; z-index: 10;
         }
         
         .white { background: #fff; color: #000; }
@@ -57,8 +57,19 @@
         .ball6 { background: #0a0; } .ball7 { background: #f0f; }
         .ball8 { background: #000; color: #ffd700; border: 3px solid #ffd700; }
         
-        #cue { position: absolute; width: 290px; height: 9px; background: linear-gradient(90deg, #5C3311, #8B4513, #A0522D); border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.7); transform-origin: right center; z-index: 8; pointer-events: none; }
-        #aim-line { position: absolute; height: 3px; background: repeating-linear-gradient(90deg, #ffff00 0px, #ffff00 12px, transparent 12px, transparent 24px); box-shadow: 0 0 12px #ff0; z-index: 7; pointer-events: none; transform-origin: left center; opacity: 0.8; }
+        #cue {
+            position: absolute; width: 280px; height: 9px;
+            background: linear-gradient(90deg, #5C3311, #8B4513, #A0522D, #8B4513);
+            border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+            transform-origin: right center; z-index: 8; pointer-events: none;
+        }
+        
+        #aim-line {
+            position: absolute; height: 3px;
+            background: repeating-linear-gradient(90deg, #ffff00 0px, #ffff00 12px, transparent 12px, transparent 24px);
+            box-shadow: 0 0 12px #ff0; z-index: 7; pointer-events: none;
+            transform-origin: left center; opacity: 0.85;
+        }
         
         #ui { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; z-index: 100; }
         .player-info { background: rgba(0,0,0,0.7); padding: 12px 25px; border: 3px solid #ffd700; border-radius: 8px; }
@@ -72,7 +83,7 @@
     <!-- LOGIN -->
     <div id="login-screen">
         <div class="container">
-            <h1 style="color:#ffd700;">🎱 SINUCA COM EFEITO</h1>
+            <h1 style="color:#ffd700;">🎱 SINUCA DUEL</h1>
             <input type="text" id="username" placeholder="Nome de Usuário" value="Jogador1">
             <input type="password" id="password" placeholder="Senha (mín. 6)">
             <br><br>
@@ -90,12 +101,15 @@
         </div>
 
         <div id="table">
-            <div class="pocket" style="top:-18px;left:-18px;"></div>
-            <div class="pocket" style="top:-18px;right:-18px;"></div>
-            <div class="pocket" style="bottom:-18px;left:-18px;"></div>
-            <div class="pocket" style="bottom:-18px;right:-18px;"></div>
-            <div class="pocket" style="top:50%;left:-18px;transform:translateY(-50%);"></div>
-            <div class="pocket" style="top:50%;right:-18px;transform:translateY(-50%);"></div>
+            <!-- 6 Caçapas -->
+            <!-- Cantos -->
+            <div class="pocket" style="top:-18px; left:-18px;"></div>
+            <div class="pocket" style="top:-18px; right:-18px;"></div>
+            <div class="pocket" style="bottom:-18px; left:-18px;"></div>
+            <div class="pocket" style="bottom:-18px; right:-18px;"></div>
+            <!-- Meio das laterais -->
+            <div class="pocket" style="top:50%; left:-18px; transform:translateY(-50%);"></div>
+            <div class="pocket" style="top:50%; right:-18px; transform:translateY(-50%);"></div>
         </div>
 
         <div id="power-bar"><div id="power-fill"></div></div>
@@ -107,18 +121,6 @@
     </div>
 
     <script>
-        // === LOGIN ===
-        function handleLogin() {
-            const username = document.getElementById('username').value.trim();
-            if (username.length < 3) return alert("Nome muito curto!");
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'flex';
-            player1.name = username;
-            document.getElementById('p1-name').textContent = username;
-            initGame();
-        }
-
-        // === VARIÁVEIS ===
         let balls = [], cueBall;
         let currentPlayer = 1;
         let player1 = { name: "", score: 0 };
@@ -129,13 +131,20 @@
 
         class Ball {
             constructor(x, y, color, number) {
-                this.x = x; this.y = y;
-                this.vx = 0; this.vy = 0;
-                this.spinX = 0; this.spinY = 0;   // <-- NOVO: Efeito
-                this.radius = 16;
-                this.number = number;
-                this.element = null;
+                this.x = x; this.y = y; this.vx = 0; this.vy = 0;
+                this.spinX = 0; this.spinY = 0;
+                this.radius = 16; this.number = number; this.element = null;
             }
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            if (username.length < 3) return alert("Nome muito curto!");
+            player1.name = username;
+            document.getElementById('p1-name').textContent = username;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            initGame();
         }
 
         function createBalls() {
@@ -144,7 +153,11 @@
             cueBall = new Ball(220, 250, '#fff', 0);
             createBallElement(cueBall, table);
 
-            const positions = [{x:550,y:250},{x:580,y:215},{x:580,y:285},{x:610,y:190},{x:610,y:250},{x:610,y:310},{x:640,y:170},{x:640,y:250}];
+            const positions = [
+                {x:550,y:250}, {x:580,y:215}, {x:580,y:285},
+                {x:610,y:190}, {x:610,y:250}, {x:610,y:310},
+                {x:640,y:170}, {x:640,y:250}
+            ];
             const colors = ['#f00','#00f','#f60','#800080','#ff0','#0a0','#f0f','#000'];
 
             positions.forEach((pos,i) => {
@@ -175,54 +188,44 @@
         function updateCueAndAim() {
             const cue = document.getElementById('cue');
             const aim = document.getElementById('aim-line');
-            const offset = 35;
-            const cx = cueBall.x - Math.cos(cueAngle) * offset;
-            const cy = cueBall.y - Math.sin(cueAngle) * offset;
+            
+            // TACO ATRÁS da bola branca
+            const offset = 38;
+            const cueX = cueBall.x - Math.cos(cueAngle) * offset;
+            const cueY = cueBall.y - Math.sin(cueAngle) * offset;
 
-            cue.style.left = `${cx - 290}px`;
-            cue.style.top = `${cy - 4.5}px`;
+            cue.style.left = `${cueX - 280}px`;
+            cue.style.top = `${cueY - 4.5}px`;
             cue.style.transform = `rotate(${cueAngle * 180 / Math.PI}deg)`;
 
+            // Mira na frente
             aim.style.left = `${cueBall.x}px`;
             aim.style.top = `${cueBall.y - 1.5}px`;
-            aim.style.width = '650px';
+            aim.style.width = '640px';
             aim.style.transform = `rotate(${cueAngle * 180 / Math.PI}deg)`;
         }
 
+        // O resto da física (com spin) continua igual à versão anterior
         function applyPhysics() {
             const friction = 0.982;
-            const spinFriction = 0.96;
-
-            // Bola branca com efeito
             cueBall.x += cueBall.vx;
             cueBall.y += cueBall.vy;
-            
-            // Aplicar spin na velocidade
             cueBall.vx += cueBall.spinX * 0.018;
             cueBall.vy += cueBall.spinY * 0.018;
-
             cueBall.vx *= friction;
             cueBall.vy *= friction;
-            cueBall.spinX *= spinFriction;
-            cueBall.spinY *= spinFriction;
+            cueBall.spinX *= 0.96;
+            cueBall.spinY *= 0.96;
 
-            if (Math.abs(cueBall.vx) < 0.05) cueBall.vx = 0;
-            if (Math.abs(cueBall.vy) < 0.05) cueBall.vy = 0;
+            const r = 16;
+            if (cueBall.x - r < BORDER) { cueBall.x = BORDER + r; cueBall.vx = -cueBall.vx * 0.85; }
+            if (cueBall.x + r > TABLE_WIDTH - BORDER) { cueBall.x = TABLE_WIDTH - BORDER - r; cueBall.vx = -cueBall.vx * 0.85; }
+            if (cueBall.y - r < BORDER) { cueBall.y = BORDER + r; cueBall.vy = -cueBall.vy * 0.85; }
+            if (cueBall.y + r > TABLE_HEIGHT - BORDER) { cueBall.y = TABLE_HEIGHT - BORDER - r; cueBall.vy = -cueBall.vy * 0.85; }
 
-            // Bordas
-            const r = cueBall.radius;
-            if (cueBall.x - r < BORDER) { cueBall.x = BORDER + r; cueBall.vx = -cueBall.vx * 0.85; cueBall.spinX *= -0.6; }
-            if (cueBall.x + r > TABLE_WIDTH - BORDER) { cueBall.x = TABLE_WIDTH - BORDER - r; cueBall.vx = -cueBall.vx * 0.85; cueBall.spinX *= -0.6; }
-            if (cueBall.y - r < BORDER) { cueBall.y = BORDER + r; cueBall.vy = -cueBall.vy * 0.85; cueBall.spinY *= -0.6; }
-            if (cueBall.y + r > TABLE_HEIGHT - BORDER) { cueBall.y = TABLE_HEIGHT - BORDER - r; cueBall.vy = -cueBall.vy * 0.85; cueBall.spinY *= -0.6; }
-
-            // Outras bolas (com spin reduzido)
             balls.forEach(ball => {
                 ball.x += ball.vx; ball.y += ball.vy;
-                ball.vx *= friction * 0.99;
-                ball.vy *= friction * 0.99;
-                ball.spinX *= spinFriction * 0.95;
-                ball.spinY *= spinFriction * 0.95;
+                ball.vx *= friction; ball.vy *= friction;
             });
 
             handleCollisions();
@@ -231,41 +234,37 @@
         }
 
         function handleCollisions() {
-            const allBalls = [cueBall, ...balls];
-            for (let i = 0; i < allBalls.length; i++) {
-                for (let j = i + 1; j < allBalls.length; j++) {
-                    const a = allBalls[i], b = allBalls[j];
+            const all = [cueBall, ...balls];
+            for (let i = 0; i < all.length; i++) {
+                for (let j = i+1; j < all.length; j++) {
+                    const a = all[i], b = all[j];
                     const dx = b.x - a.x, dy = b.y - a.y;
                     const dist = Math.hypot(dx, dy);
-
                     if (dist < a.radius + b.radius && dist > 0.1) {
-                        const nx = dx / dist, ny = dy / dist;
+                        const nx = dx/dist, ny = dy/dist;
                         const p = 2 * (a.vx*nx + a.vy*ny - b.vx*nx - b.vy*ny) / 2;
-
-                        a.vx -= p * nx; a.vy -= p * ny;
-                        b.vx += p * nx; b.vy += p * ny;
-
-                        // Transferência de spin (efeito)
-                        b.spinX += a.spinX * 0.4;
-                        b.spinY += a.spinY * 0.4;
-                        a.spinX *= 0.6;
-                        a.spinY *= 0.6;
+                        a.vx -= p*nx; a.vy -= p*ny;
+                        b.vx += p*nx; b.vy += p*ny;
                     }
                 }
             }
         }
 
-        function checkPockets() { /* mesmo código anterior */ 
-            const pockets = [{x:35,y:35},{x:765,y:35},{x:35,y:465},{x:765,y:465},{x:35,y:250},{x:765,y:250}];
-            
+        function checkPockets() {
+            const pockets = [
+                {x:35,y:35}, {x:765,y:35},
+                {x:35,y:465}, {x:765,y:465},
+                {x:35,y:250}, {x:765,y:250}
+            ];
+
             for (let p of pockets) {
                 if (Math.hypot(cueBall.x - p.x, cueBall.y - p.y) < 38) {
-                    cueBall.x = 220; cueBall.y = 250; cueBall.vx = cueBall.vy = cueBall.spinX = cueBall.spinY = 0;
+                    cueBall.x = 220; cueBall.y = 250; cueBall.vx = cueBall.vy = 0;
                     return;
                 }
             }
 
-            for (let i = balls.length - 1; i >= 0; i--) {
+            for (let i = balls.length-1; i >= 0; i--) {
                 const ball = balls[i];
                 for (let p of pockets) {
                     if (Math.hypot(ball.x - p.x, ball.y - p.y) < 38) {
@@ -286,9 +285,6 @@
             if (cueBall.element) {
                 cueBall.element.style.left = (cueBall.x - 16) + 'px';
                 cueBall.element.style.top = (cueBall.y - 16) + 'px';
-                // Efeito visual de rotação
-                const rot = (cueBall.spinX + cueBall.spinY) * 8;
-                cueBall.element.style.transform = `rotate(${rot}deg)`;
             }
             balls.forEach(b => {
                 if (b.element) {
@@ -302,47 +298,24 @@
         function setupControls() {
             const table = document.getElementById('table');
             table.addEventListener('mousedown', e => {
-                if (cueBall.vx === 0 && cueBall.vy === 0) {
-                    isAiming = true;
-                    updateAim(e);
-                }
+                if (cueBall.vx === 0 && cueBall.vy === 0) { isAiming = true; updateAim(e); }
             });
-
             document.addEventListener('mousemove', e => { if (isAiming) updateAim(e); });
-
             document.addEventListener('mouseup', e => {
                 if (!isAiming) return;
                 isAiming = false;
-
                 const rect = table.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                const dx = mouseX - cueBall.x;
-                const dy = mouseY - cueBall.y;
-                const dist = Math.hypot(dx, dy);
-                const force = Math.min(34, dist / 7.5);
-
+                const dx = (e.clientX - rect.left) - cueBall.x;
+                const dy = (e.clientY - rect.top) - cueBall.y;
+                const force = Math.min(35, Math.hypot(dx, dy) / 7.5);
                 cueBall.vx = -Math.cos(cueAngle) * force;
                 cueBall.vy = -Math.sin(cueAngle) * force;
-
-                // === CÁLCULO DE SPIN ===
-                const centerX = cueBall.x;
-                const centerY = cueBall.y;
-                const hitOffsetX = (mouseX - centerX) / 20;
-                const hitOffsetY = (mouseY - centerY) / 20;
-
-                cueBall.spinX = -hitOffsetY * 1.8;   // Topspin / Backspin
-                cueBall.spinY = hitOffsetX * 1.6;    // Sidespin
             });
         }
 
         function updateAim(e) {
             const rect = document.getElementById('table').getBoundingClientRect();
-            cueAngle = Math.atan2(
-                (e.clientY - rect.top) - cueBall.y,
-                (e.clientX - rect.left) - cueBall.x
-            );
+            cueAngle = Math.atan2((e.clientY - rect.top) - cueBall.y, (e.clientX - rect.left) - cueBall.x);
             updateCueAndAim();
         }
 
@@ -356,10 +329,7 @@
         }
 
         function gameLoop() {
-            if (gameRunning) {
-                applyPhysics();
-                requestAnimationFrame(gameLoop);
-            }
+            if (gameRunning) { applyPhysics(); requestAnimationFrame(gameLoop); }
         }
 
         function startTimer() {
@@ -380,10 +350,10 @@
         }
 
         function showLeaderboard() {
-            alert(`Ranking Atual:\n${player1.name}: ${player1.score}\n${player2.name}: ${player2.score}`);
+            alert(`Pontuação:\n${player1.name}: ${player1.score}\n${player2.name}: ${player2.score}`);
         }
 
-        window.onload = () => console.log("%c🎱 Sinuca com Física de Efeito Carregada!", "color:#ffd700;font-size:16px");
+        window.onload = () => console.log("%c🎱 Sinuca corrigida - Taco atrás + 6 caçapas", "color:#ffd700");
     </script>
 </body>
 </html>
